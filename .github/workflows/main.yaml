@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:        
-      - '[0-9]+.[0-9]+.[0-9]+-rc'
+      - 'v[0-9]+.[0-9]+.[0-9]+-rc'
   workflow_dispatch:
     inputs:
       publishChocolatey:
