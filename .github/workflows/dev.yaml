@@ -1,57 +1,59 @@
-name: Release
+name: Pre-Release
 
 on:
-  push:
-    branches:
-      - dev
+    push:
+      tags:        
+        - 'v[0-9]+.[0-9]+.[0-9]+-rc'  
+
+env:
+    REPOSITORY_OWNER: "kaytu-io"
+    REPOSITORY_NAME: "kaytu"
+    HOMEBREW_TAP: "homebrew-cli-tap"
+    OWNER_EMAIL: "dev@kaytu.io"
 
 jobs:
-  tag:
-    runs-on: ubuntu-latest
-    outputs:
-      latest_tag: ${{ steps.set_latest_tag.outputs.latest_tag }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GH_TOKEN }}
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: stable
-      - name: Tag version
-        id: tag_version
-        uses: mathieudutour/github-tag-action@v6.1
-        with:
-          github_token: ${{ secrets.GH_TOKEN }}
-          release_branches: main
-          pre_release_branches: dev
-          append_to_pre_release_tag: rc
-          tag_prefix: v
-      - name: Set latest tag output
-        id: set_latest_tag
-        run: |
-          if [[ -z "${{ steps.tag_version.outputs.new_tag }}" ]]; then
-            echo "latest_tag=${{ steps.tag_version.outputs.previous_tag }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "latest_tag=${{ steps.tag_version.outputs.new_tag }}" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Save new tag
-        id: save_new_tag
-        run: |
-          version=${{ steps.tag_version.outputs.new_tag }}
-          version=${version#v}
-          echo $version > new_tag.txt
-      - name: Upload new tag
-        uses: actions/upload-artifact@v2
-        with:
-          name: new_tag
-          path: new_tag.txt
+#   tag:
+#     runs-on: ubuntu-latest
+#     outputs:
+#       latest_tag: ${{ steps.set_latest_tag.outputs.latest_tag }}
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
+#           token: ${{ secrets.GH_TOKEN }}
+#       - name: Tag version
+#         id: tag_version
+#         uses: mathieudutour/github-tag-action@v6.1
+#         with:
+#           github_token: ${{ secrets.GH_TOKEN }}
+#           release_branches: main
+#           pre_release_branches: dev
+#           append_to_pre_release_tag: rc
+#           tag_prefix: v
+#       - name: Set latest tag output
+#         id: set_latest_tag
+#         run: |
+#           if [[ -z "${{ steps.tag_version.outputs.new_tag }}" ]]; then
+#             echo "latest_tag=${{ steps.tag_version.outputs.previous_tag }}" >> "$GITHUB_OUTPUT"
+#           else
+#             echo "latest_tag=${{ steps.tag_version.outputs.new_tag }}" >> "$GITHUB_OUTPUT"
+#           fi
+#       - name: Save new tag
+#         id: save_new_tag
+#         run: |
+#           version=${{ steps.tag_version.outputs.new_tag }}
+#           version=${version#v}
+#           echo $version > new_tag.txt
+#       - name: Upload new tag
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: new_tag
+#           path: new_tag.txt
   release:
     runs-on: ubuntu-latest
-    needs:
-      - tag
+    # needs:
+    #   - tag
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -72,10 +74,12 @@ jobs:
         with:
           distribution: goreleaser
           version: latest
-          args: release --clean
+          args: release --clean --skip homebrew
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 #          CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
+          REPOSITORY_OWNER: ${{ env.REPOSITORY_OWNER }}
+          REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
           COSIGN_PWD: ${{ secrets.COSIGN_PWD }}
           COSIGN_SECRET: ${{ secrets.COSIGN_SECRET }}
 #
