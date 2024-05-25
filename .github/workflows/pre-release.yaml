@@ -15,7 +15,6 @@ env:
 jobs:
   tag:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'schedule' }}
     outputs:
       latest_tag: ${{ steps.set_latest_tag.outputs.latest_tag }}
     steps:
