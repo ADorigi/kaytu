@@ -50,39 +50,39 @@ jobs:
         with:
           name: new_tag
           path: new_tag.txt
-#   release:
-#     runs-on: ubuntu-latest
-#     # needs:
-#     #   - tag
-#     steps:
-#       - name: Checkout
-#         uses: actions/checkout@v4
-#         with:
-#           fetch-depth: 0
-#           token: ${{ secrets.GH_TOKEN }}
-#       - name: Set up Go
-#         uses: actions/setup-go@v4
-#         with:
-#           go-version: stable
-#       - name: Install cosign
-#         run: |
-#           curl -O -L "https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64"
-#           sudo mv cosign-linux-amd64 /usr/local/bin/cosign
-#           sudo chmod +x /usr/local/bin/cosign
-#       - name: Run GoReleaser
-#         uses: goreleaser/goreleaser-action@v5
-#         with:
-#           distribution: goreleaser
-#           version: latest
-#           args: release --clean --skip homebrew
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-# #          CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
-#           REPOSITORY_OWNER: ${{ env.REPOSITORY_OWNER }}
-#           REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
-#           COSIGN_PWD: ${{ secrets.COSIGN_PWD }}
-#           COSIGN_SECRET: ${{ secrets.COSIGN_SECRET }}
-#
+  release:
+    runs-on: ubuntu-latest
+    # needs:
+    #   - tag
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: stable
+      - name: Install cosign
+        run: |
+          curl -O -L "https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64"
+          sudo mv cosign-linux-amd64 /usr/local/bin/cosign
+          sudo chmod +x /usr/local/bin/cosign
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean --skip homebrew
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
+          REPOSITORY_OWNER: ${{ env.REPOSITORY_OWNER }}
+          REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
+          COSIGN_PWD: ${{ secrets.COSIGN_PWD }}
+          COSIGN_SECRET: ${{ secrets.COSIGN_SECRET }}
+
 #      - uses: robinraju/release-downloader@v1.10
 #        id: download_release_amd64
 #        with:
