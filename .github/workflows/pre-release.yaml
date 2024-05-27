@@ -28,7 +28,7 @@ jobs:
         uses: mathieudutour/github-tag-action@v6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          pre_release_branches: main
+          pre_release_branches: test-updating-workflows
           append_to_pre_release_tag: rc
           tag_prefix: v
       - name: Set latest tag output
