@@ -10,10 +10,10 @@ on:
       
 
 env:
-    REPOSITORY_OWNER: "kaytu-io"
+    REPOSITORY_OWNER: "adorigi"
     REPOSITORY_NAME: "kaytu"
-    HOMEBREW_TAP: "homebrew-cli-tap"
-    OWNER_EMAIL: "dev@kaytu.io"
+    HOMEBREW_TAP: "homebrew-adorigi"
+    OWNER_EMAIL: "gulegulzaradnan@gmail.com"
 
 jobs:
   tag:
@@ -32,7 +32,7 @@ jobs:
         uses: mathieudutour/github-tag-action@v6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          pre_release_branches: main
+          pre_release_branches: test-updating-workflows
           append_to_pre_release_tag: rc
           tag_prefix: v
       - name: Set latest tag output
