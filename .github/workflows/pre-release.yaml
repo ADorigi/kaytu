@@ -27,14 +27,40 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Tag version
+      - name: Get last pre-release tag or create new one
         id: tag_version
-        uses: mathieudutour/github-tag-action@v6.2
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          pre_release_branches: main
-          append_to_pre_release_tag: rc
-          tag_prefix: v
+        run: |
+            # Fetch all tags
+            git fetch --tags
+  
+            # Fetch only the tags that match the pre-release format
+            pre_release_tags=$(git tag -l 'v[0-9]*.[0-9]*.[0-9]*-rc.*' --sort=-v:refname)
+  
+            # Get the last pre-release tag
+            last_pre_release_tag=$(echo "$pre_release_tags" | head -n 1)
+  
+            if [ -z "$last_pre_release_tag" ]; then
+              # If no pre-release tags found, get the last release tag
+              last_release_tag=$(git tag -l 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n 1)
+              IFS='.' read -r major minor patch <<< "$last_release_tag"
+              new_pre_release_tag="$major.$minor.$patch-rc.1"
+              echo "No pre-release tags found. Creating a new one: $new_pre_release_tag"
+            else
+              echo "Last pre-release tag: $last_pre_release_tag"
+              IFS='.' read -r major minor patch rc_number <<< "$last_pre_release_tag"
+              incremented_rc_number=$((rc_number + 1))
+              new_pre_release_tag="$major.$minor.$patch.$incremented_rc_number"
+            fi
+  
+            echo "::set-output name=new_tag::$new_pre_release_tag"
+    #   - name: Tag version
+    #     id: tag_version
+    #     uses: mathieudutour/github-tag-action@v6.2
+    #     with:
+    #       github_token: ${{ secrets.GITHUB_TOKEN }}
+    #       pre_release_branches: main
+    #       append_to_pre_release_tag: rc
+    #       tag_prefix: v
       - name: Set latest tag output
         id: set_latest_tag
         run: echo "latest_tag=${{ steps.tag_version.outputs.new_tag }}" >> "$GITHUB_OUTPUT"
