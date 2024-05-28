@@ -72,4 +72,3 @@ For RDS:
 ```shell
 kaytu optimize rds-instance
 ```
-
