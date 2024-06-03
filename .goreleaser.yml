@@ -6,6 +6,7 @@ release:
     owner: "{{ .Env.REPOSITORY_OWNER }}"
     name:  "{{ .Env.REPOSITORY_NAME }}"
   # prerelease: "{{ .Env.GORELEASER_PRERELEASE }}"
+  prerelease: auto
   make_latest: "{{ .Env.GORELEASER_MAKE_LATEST}}"
 
 checksum: {}
