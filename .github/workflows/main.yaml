@@ -34,7 +34,7 @@ jobs:
         uses: mathieudutour/github-tag-action@v6.1
         with:
           github_token: ${{ secrets.GH_TOKEN }}
-          release_branches: fix-release-tags
+          release_branches: main
           tag_prefix: v
       - name: Set latest tag output
         id: set_latest_tag
@@ -80,7 +80,7 @@ jobs:
         with:
           distribution: goreleaser
           version: latest
-          args: release --clean --debug
+          args: release --clean
         env:
           GORELEASER_CURRENT_TAG: ${{ needs.tag.outputs.latest_tag }}
           GORELEASER_PREVIOUS_TAG: ${{ needs.tag.outputs.previous_tag }}
