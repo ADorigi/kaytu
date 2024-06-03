@@ -6,7 +6,6 @@ release:
     owner: "{{ .Env.REPOSITORY_OWNER }}"
     name:  "{{ .Env.REPOSITORY_NAME }}"
   make_latest: "{{ .Env.LATEST }}"
-  prerelease: "{{ .Env.PRERELEASE }}"
 
 checksum: {}
 
