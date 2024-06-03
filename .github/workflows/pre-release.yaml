@@ -31,7 +31,7 @@ jobs:
         with:
           github_token: ${{ secrets.GH_TOKEN }}
           release_branches: none
-          pre_release_branches: main
+          pre_release_branches: fix-release-tags
           append_to_pre_release_tag: rc
           tag_prefix: v
       - name: Set latest tag output
@@ -88,8 +88,8 @@ jobs:
           REPOSITORY_NAME: ${{ env.REPOSITORY_NAME }}
           COSIGN_PWD: ${{ secrets.COSIGN_PWD }}
           COSIGN_SECRET: ${{ secrets.COSIGN_SECRET }}
-          LATEST: 'false'
-          PRERELEASE: 'true'
+          GORELEASER_MAKE_LATEST: false
+          GORELEASER_PRERELEASE: true
 
 #      - uses: robinraju/release-downloader@v1.10
 #        id: download_release_amd64
