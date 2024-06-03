@@ -92,6 +92,7 @@ jobs:
           OWNER_EMAIL: ${{ env.OWNER_EMAIL }}
           HOMEBREW_TAP: ${{ env.HOMEBREW_TAP }}
           LATEST: "true"
+          PRERELEASE: "false"
 
   sign-windows:
     runs-on: ubuntu-latest

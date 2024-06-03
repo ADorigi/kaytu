@@ -89,6 +89,7 @@ jobs:
           COSIGN_PWD: ${{ secrets.COSIGN_PWD }}
           COSIGN_SECRET: ${{ secrets.COSIGN_SECRET }}
           LATEST: "false"
+          PRERELEASE: "true"
 
 #      - uses: robinraju/release-downloader@v1.10
 #        id: download_release_amd64
