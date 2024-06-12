@@ -13,4 +13,5 @@ jobs:
             echo "New tag: ${{ github.event.release.tag_name }}"
       - name: test brew
         run: |
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
             brew -v
