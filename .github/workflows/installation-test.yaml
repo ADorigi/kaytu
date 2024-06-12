@@ -5,13 +5,23 @@ on:
       types: [published]
 
 jobs:
-  tag:
+  linux:
     runs-on: ubuntu-latest
     steps:
-      - name: print tag
+      - name: Print Tag
         run: |
             echo "New tag: ${{ github.event.release.tag_name }}"
-      - name: test brew
+      - name: test kaytu
         run: |
-            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-            brew -v
+            curl -fsSL https://raw.githubusercontent.com/kaytu-io/kaytu/main/scripts/install.sh | sh
+            kaytu version
+  darwin:
+    runs-on: macos-latest
+    steps:
+      - name: Tap Kaytu's cli-tap
+        run: brew tap kaytu-io/cli-tap 
+      - name: Install Kaytu 
+        run: brew install kaytu
+      - name: Check Kaytu Version
+        run: kaytu version
+       
