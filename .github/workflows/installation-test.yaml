@@ -1,0 +1,16 @@
+name: Installation Tests
+
+on:
+    release:
+      types: [published]
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: print tag
+        run: |
+            echo "New tag: ${{ github.event.release.tag_name }}"
+      - name: test brew
+        run: |
+            brew -v
