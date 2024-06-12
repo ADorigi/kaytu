@@ -67,6 +67,14 @@ brews:
       - linux
       - darwin
 
+nfpms:
+  - package_name: "{{ .ProjectName }}"
+    maintainer: "{{ .Env.REPOSITORY_OWNER }} <{{ .Env.OWNER_EMAIL }}>"
+    builds:
+      - linux
+    formats:
+      - deb
+      - rpm
 
 #chocolateys:
 #  - name: kaytu
