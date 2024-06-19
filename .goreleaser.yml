@@ -20,6 +20,8 @@ builds:
     goarch:
       - amd64
       - arm64
+    env:
+      - CGO_ENABLED=0
     main: ./main.go
   - id: darwin
     binary: kaytu
@@ -30,6 +32,8 @@ builds:
     goarch:
       - amd64
       - arm64
+    env:
+      - CGO_ENABLED=0
     main: ./main.go
   - id: windows
     binary: kaytu
@@ -39,6 +43,8 @@ builds:
       - windows
     goarch:
       - amd64
+    env:
+      - CGO_ENABLED=0
     main: ./main.go
 archives:
   - id: binary

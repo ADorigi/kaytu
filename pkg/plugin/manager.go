@@ -103,7 +103,10 @@ func (m *Manager) StartServer() error {
 
 	m.port = m.lis.Addr().(*net.TCPAddr).Port
 
-	m.grpcServer = grpc.NewServer()
+	m.grpcServer = grpc.NewServer(
+		grpc.MaxRecvMsgSize(64*1024*1024),
+		grpc.MaxSendMsgSize(64*1024*1024),
+	)
 	golang.RegisterPluginServer(m.grpcServer, m)
 	go func() {
 		err = m.grpcServer.Serve(m.lis)
@@ -145,6 +148,19 @@ func (m *Manager) Register(stream golang.Plugin_RegisterServer) error {
 				m.NonInteractiveView.PublishError(fmt.Errorf(receivedMsg.GetErr().Error))
 			case receivedMsg.GetReady() != nil:
 				m.NonInteractiveView.PublishResultsReady(receivedMsg.GetReady())
+			case receivedMsg.GetNonInteractive() != nil:
+				m.NonInteractiveView.PublishNonInteractiveExport(receivedMsg.GetNonInteractive())
+			case receivedMsg.GetUpdateChart() != nil:
+				if m.NonInteractiveView == nil {
+					return errors.New("custom optimizations controller not set - is plugin running in default ui mode?")
+				}
+				updateChart := receivedMsg.GetUpdateChart()
+				if updateChart.GetOverviewChart() != nil {
+					m.NonInteractiveView.SetChartDefinition(updateChart.GetOverviewChart())
+				}
+				if updateChart.GetDevicesChart() != nil {
+					m.NonInteractiveView.SetDevicesChartDefinition(updateChart.GetDevicesChart())
+				}
 			}
 		}
 	} else {
@@ -276,8 +292,8 @@ func (m *Manager) Install(addr, token string, unsafe, pluginDebugMode bool) erro
 			if p, ok := plugins[addr]; ok && p.Config.Version == assetVersion {
 				return nil
 			}
-			fmt.Printf("Installing plugin %s, version %s\n", addr, assetVersion)
-			fmt.Println("Downloading the plugin...")
+			os.Stderr.WriteString(fmt.Sprintf("Installing plugin %s, version %s\n", addr, assetVersion))
+			os.Stderr.WriteString("Downloading the plugin...")
 
 			rc, url, err := api.Repositories.DownloadReleaseAsset(context.Background(), owner, repository, *asset.ID, nil)
 			if err != nil {
@@ -325,7 +341,7 @@ func (m *Manager) Install(addr, token string, unsafe, pluginDebugMode bool) erro
 					Commands: nil,
 				},
 			}
-			fmt.Println("Starting the plugin...")
+			os.Stderr.WriteString("Starting the plugin...")
 			runningCmd, err := startPlugin(&plugin, fmt.Sprintf("localhost:%d", m.port))
 			if err != nil {
 				return err
@@ -335,7 +351,7 @@ func (m *Manager) Install(addr, token string, unsafe, pluginDebugMode bool) erro
 				m.plugins = nil
 			}()
 
-			fmt.Println("Waiting for plugin to load...")
+			os.Stderr.WriteString("Waiting for plugin to load...")
 			installed := false
 			for i := 0; i < 30; i++ {
 				for _, runningPlugin := range m.plugins {

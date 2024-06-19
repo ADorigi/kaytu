@@ -40,10 +40,15 @@ var rootCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(plugin.PluginCmd)
 	rootCmd.AddCommand(predef.VersionCmd)
-	rootCmd.AddCommand(predef.LoginCmd)
+	rootCmd.AddCommand(predef.LoginCmd())
 	rootCmd.AddCommand(predef.LogoutCmd)
+	rootCmd.AddCommand(predef.ApiKeyRootCmd)
 	rootCmd.AddCommand(optimizeCmd)
 	rootCmd.AddCommand(terraformCmd)
+
+	predef.ApiKeyRootCmd.AddCommand(predef.ApiKeyCreateCmd)
+	predef.ApiKeyRootCmd.AddCommand(predef.ApiKeyListCmd)
+	predef.ApiKeyRootCmd.AddCommand(predef.ApiKeyDeleteCmd)
 
 	optimizeCmd.PersistentFlags().String("preferences", "", "Path to preferences file (yaml)")
 	optimizeCmd.PersistentFlags().String("output", "interactive", "Show optimization results in selected output (possible values: interactive, table, csv, json. default value: interactive)")
@@ -205,7 +210,7 @@ func Execute() {
 
 							if rcmd.LoginRequired && cfg.AccessToken == "" {
 								// login
-								err := predef.LoginCmd.RunE(c, args)
+								err := predef.LoginCmd().RunE(c, args)
 								if err != nil {
 									return err
 								}
