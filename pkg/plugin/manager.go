@@ -182,6 +182,9 @@ func (m *Manager) Register(stream golang.Plugin_RegisterServer) error {
 				})
 
 			case receivedMsg.GetJob() != nil:
+				if m.optimizations.GetInitialization() {
+					m.optimizations.SetInitialization(false)
+				}
 				m.jobs.Publish(receivedMsg.GetJob())
 
 			case receivedMsg.GetOi() != nil:

@@ -115,6 +115,10 @@ func (o *Optimizations[T]) GetInitialization() bool {
 	return o.initializing
 }
 
+func (o *Optimizations[T]) SetInitialization(status bool) {
+	o.initializing = status
+}
+
 func (o *Optimizations[T]) SetResultSummary(msg string) {
 	o.summaryChan <- msg
 }
