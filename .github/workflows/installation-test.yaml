@@ -43,6 +43,7 @@ jobs:
 
       - name: test kaytu
         run: |
+            kaytu
             KAYTU_VERSION=$(kaytu version)
             if [ $KAYTU_VERSION != ${{ steps.remove_tag_prefix.outputs.stripped_version }} ]; then 
                 exit 1
