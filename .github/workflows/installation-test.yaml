@@ -24,18 +24,21 @@ jobs:
       - name: Print Tag
         run: |
             echo "New tag: ${{ github.event.release.tag_name }}"
+            
       - name: Remove tag prefix
         run: |
             TAG=${{ github.event.release.tag_name }}
+            # echo "::set-output name=new_tag::$(TAG#v)"
             echo "STRIPPED_VERSION=${TAG#v}" >> "$GITHUB_ENV"
 
-      - name: install kaytu
+      - name: setup environment 
         run: |
             sudo apt update
             sudo apt install wget -y
-            mkdir temp
-            cd temp
-            wget https://github.com/ADorigi/kaytu/releases/download/${{ github.event.release.tag_name }}/kaytu_$STRIPPED_VERSION_linux_amd64.deb
+            
+      - name: install kaytu
+        run: |
+            wget https://github.com/ADorigi/kaytu/releases/download/${{ github.event.release.tag_name }}/kaytu_$(STRIPPED_VERSION)_linux_amd64.deb
             sudo dpkg -i kaytu_$STRIPPED_VERSION_linux_amd64.deb
 
       - name: test kaytu
