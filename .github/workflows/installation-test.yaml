@@ -40,11 +40,12 @@ jobs:
         run: |
             wget https://github.com/ADorigi/kaytu/releases/download/${{ github.event.release.tag_name }}/kaytu_${{ steps.remove_tag_prefix.outputs.stripped_version }}_linux_amd64.deb
             sudo dpkg -i kaytu_${{ steps.remove_tag_prefix.outputs.stripped_version }}_linux_amd64.deb
+            kaytu
 
       - name: test kaytu
         run: |
-            kaytu
             KAYTU_VERSION=$(kaytu version)
+            echo $KAYTU_VERSION
             if [ $KAYTU_VERSION != ${{ steps.remove_tag_prefix.outputs.stripped_version }} ]; then 
                 exit 1
             fi
