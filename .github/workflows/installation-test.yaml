@@ -18,6 +18,8 @@ jobs:
 
   ubuntu-deb:
     runs-on: ubuntu-latest
+    if: always()
+    needs: ubuntu-script
     steps:
       - name: Print Tag
         run: |
@@ -44,6 +46,8 @@ jobs:
 
   darwin:
     runs-on: macos-latest
+    if: always()
+    needs: ubuntu-deb
     steps:
       - name: Avoiding Rate Limiting
         run: sleep 2
