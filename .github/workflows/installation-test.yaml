@@ -29,7 +29,7 @@ jobs:
         id: remove_tag_prefix
         run: |
             TAG=${{ github.event.release.tag_name }}
-            echo "{STRIPPED_VERSION}={$(TAG#v)}" >> $GITHUB_OUTPUT
+            echo "stripped_version=${TAG#v}" >> $GITHUB_OUTPUT
 
       - name: setup environment 
         run: |
@@ -38,13 +38,13 @@ jobs:
             
       - name: install kaytu
         run: |
-            wget https://github.com/ADorigi/kaytu/releases/download/${{ github.event.release.tag_name }}/kaytu_${{ steps.remove_tag_prefix.outputs.STRIPPED_VERSION }}_linux_amd64.deb
-            sudo dpkg -i kaytu_${{ steps.remove_tag_prefix.outputs.STRIPPED_VERSION }}_linux_amd64.deb
+            wget https://github.com/ADorigi/kaytu/releases/download/${{ github.event.release.tag_name }}/kaytu_${{ steps.remove_tag_prefix.outputs.stripped_version }}_linux_amd64.deb
+            sudo dpkg -i kaytu_${{ steps.remove_tag_prefix.outputs.stripped_version }}_linux_amd64.deb
 
       - name: test kaytu
         run: |
             KAYTU_VERSION=$(kaytu version)
-            if [ $KAYTU_VERSION != ${{ steps.remove_tag_prefix.outputs.STRIPPED_VERSION }} ]; then 
+            if [ $KAYTU_VERSION != ${{ steps.remove_tag_prefix.outputs.stripped_version }} ]; then 
                 exit 1
             fi
 
