@@ -1,0 +1,57 @@
+name: Installation Tests
+
+on:
+    release:
+      types: [published, released]
+
+jobs:
+  ubuntu-script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Tag
+        run: |
+            echo "New tag: ${{ github.event.release.tag_name }}"
+      - name: test kaytu
+        run: |
+            curl -fsSL https://raw.githubusercontent.com/kaytu-io/kaytu/main/scripts/install.sh | sh
+            kaytu version
+
+  ubuntu-deb:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Tag
+        run: |
+            echo "New tag: ${{ github.event.release.tag_name }}"
+      - name: Remove tag prefix
+        run: |
+            TAG=${{ github.event.release.tag_name }}
+            echo "STRIPPED_VERSION=${TAG#v}" >> "$GITHUB_ENV"
+
+      - name: install kaytu
+        run: |
+            apt update
+            apt install wget -y
+            mkdir temp
+            cd temp
+            wget https://github.com/ADorigi/kaytu/releases/download/${{ github.event.release.tag_name }}/kaytu_$STRIPPED_VERSION_linux_amd64.deb
+            dpkg -i kaytu_$STRIPPED_VERSION_linux_amd64.deb
+
+      - name: test kaytu
+        run: |
+            KAYTU_VERSION=$(kaytu version)
+            if [ $KAYTU_VERSION != $STRIPPED_VERSION ]; then 
+                exit 1
+            fi
+
+  darwin:
+    runs-on: macos-latest
+    steps:
+      - name: Avoiding Rate Limiting
+        run: sleep 2
+      - name: Tap Kaytu's cli-tap
+        run: brew tap kaytu-io/cli-tap 
+      - name: Install Kaytu 
+        run: brew install kaytu
+      - name: Check Kaytu Version
+        run: kaytu version
+       
