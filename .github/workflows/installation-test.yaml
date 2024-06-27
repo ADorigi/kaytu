@@ -2,7 +2,7 @@ name: Installation Tests
 
 on:
     release:
-      types: [published, released]
+      types: [released]
 
 jobs:
   ubuntu-script:
