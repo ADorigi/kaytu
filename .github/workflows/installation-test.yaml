@@ -1,0 +1,66 @@
+name: Installation Tests
+
+on:
+    release:
+      types: [released]
+
+jobs:
+  ubuntu-script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Tag
+        run: |
+            echo "New tag: ${{ github.event.release.tag_name }}"
+      - name: test kaytu
+        run: |
+            curl -fsSL https://raw.githubusercontent.com/kaytu-io/kaytu/main/scripts/install.sh | sh
+            kaytu version
+
+  ubuntu-deb:
+    runs-on: ubuntu-latest
+    if: always()
+    needs: ubuntu-script
+    steps:
+      - name: Print Tag
+        run: |
+            echo "New tag: ${{ github.event.release.tag_name }}"
+            
+      - name: Remove tag prefix
+        id: remove_tag_prefix
+        run: |
+            TAG=${{ github.event.release.tag_name }}
+            echo "stripped_version=${TAG#v}" >> $GITHUB_OUTPUT
+
+      - name: setup environment 
+        run: |
+            sudo apt update
+            sudo apt install wget -y
+            
+      - name: install kaytu
+        run: |
+            wget https://github.com/ADorigi/kaytu/releases/download/${{ github.event.release.tag_name }}/kaytu_${{ steps.remove_tag_prefix.outputs.stripped_version }}_linux_amd64.deb
+            sudo dpkg -i kaytu_${{ steps.remove_tag_prefix.outputs.stripped_version }}_linux_amd64.deb
+            kaytu
+
+      - name: test kaytu
+        run: |
+            KAYTU_VERSION=$(kaytu version)
+            echo $KAYTU_VERSION
+            if [ $KAYTU_VERSION != ${{ steps.remove_tag_prefix.outputs.stripped_version }} ]; then 
+                exit 1
+            fi
+
+  darwin:
+    runs-on: macos-latest
+    if: always()
+    needs: ubuntu-deb
+    steps:
+      - name: Avoiding Rate Limiting
+        run: sleep 2
+      - name: Tap Kaytu's cli-tap
+        run: brew tap kaytu-io/cli-tap 
+      - name: Install Kaytu 
+        run: brew install kaytu
+      - name: Check Kaytu Version
+        run: kaytu version
+       
