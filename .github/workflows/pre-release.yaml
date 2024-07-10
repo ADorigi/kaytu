@@ -10,10 +10,8 @@ on:
       
 
 env:
-    REPOSITORY_OWNER: "kaytu-io"
+    REPOSITORY_OWNER: "adorigi"
     REPOSITORY_NAME: "kaytu"
-    HOMEBREW_TAP: "homebrew-cli-tap"
-    OWNER_EMAIL: "dev@kaytu.io"
 
 jobs:
   tag:
@@ -34,7 +32,7 @@ jobs:
         with:
           github_token: ${{ secrets.GH_TOKEN }}
           release_branches: none
-          pre_release_branches: main
+          pre_release_branches: test-linux-packaing
           append_to_pre_release_tag: rc
           tag_prefix: v
       - name: Set latest tag output
